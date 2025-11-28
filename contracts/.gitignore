@@ -2,3 +2,4 @@ build/*
 traces/*
 .trace
 .coverage*
+Move.lock
