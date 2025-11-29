@@ -8,7 +8,7 @@ export const buyToken = (packageId: string, bankID: string, suiAmount: number) =
   const [paymentCoin] = tx.splitCoins(tx.gas, [amountInMist]);
 
   tx.moveCall({
-    target: `${packageId}::suitdy::buy_token`,
+    target: `${packageId}::suitudy::buy_token`,
     arguments: [
       tx.object(bankID),
       paymentCoin,

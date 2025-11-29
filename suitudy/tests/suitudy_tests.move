@@ -55,7 +55,7 @@ module education_platform::suitudy_tests {
             // Mint 10 SUI for the student to pay
             let payment = coin::mint_for_testing<SUI>(10_000_000_000, ctx); // 10 SUI
             
-            // Buy SUITDY (Rate: 1 SUI = 10 SUITDY)
+            // Buy SUITUDY (Rate: 1 SUI = 10 SUITUDY)
             suitudy::buy_token(&mut bank, payment, ctx);
             
             test_scenario::return_shared(bank);
@@ -65,7 +65,7 @@ module education_platform::suitudy_tests {
         test_scenario::next_tx(&mut scenario, STUDENT);
         {
             let token = test_scenario::take_from_sender<Coin<SUITUDY>>(&scenario);
-            // 10 SUI * 10 = 100 SUITDY (assuming decimals match or raw amount logic)
+            // 10 SUI * 10 = 100 SUITUDY (assuming decimals match or raw amount logic)
             // Logic in contract: sui_value * 10. 
             // 10_000_000_000 * 10 = 100_000_000_000
             assert!(coin::value(&token) == 100_000_000_000, 0);
@@ -89,7 +89,7 @@ module education_platform::suitudy_tests {
                 string::utf8(b"Intro to Move"),
                 string::utf8(b"image.png"),
                 string::utf8(b"content_url"),
-                500, // Price in SUITDY
+                500, // Price in SUITUDY
                 ctx
             );
         };
@@ -128,7 +128,7 @@ module education_platform::suitudy_tests {
         {
             let mut bank = test_scenario::take_shared<Bank>(&scenario);
             let ctx = test_scenario::ctx(&mut scenario);
-            // Need 10 SUI to get 100 SUITDY (since 1 SUI = 10 SUITDY, 10 SUI = 100 SUITDY? No wait)
+            // Need 10 SUI to get 100 SUITUDY (since 1 SUI = 10 SUITUDY, 10 SUI = 100 SUITUDY? No wait)
             // Code: token_amount = sui_value * 10.
             // If price is 100. We need 100 tokens.
             // sui_value * 10 = 100 => sui_value = 10.

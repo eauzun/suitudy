@@ -9,12 +9,17 @@ import {
 	TextField,
 } from "@radix-ui/themes";
 import { useState } from "react";
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { createListLectureTx } from "../utils/tx-helpers";
+import { useNetworkVariables } from "../networkConfig";
 
 interface CreateCourseProps {
 	onBack: () => void;
 }
 
 export function CreateCourse({ onBack }: CreateCourseProps) {
+	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { packageId } = useNetworkVariables() as any;
 	const [formData, setFormData] = useState({
 		title: "",
 		description: "",
@@ -30,9 +35,47 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleSubmit = () => {
-		console.log("Publishing Course:", formData);
-		// TODO: Connect to Smart Contract
+	const handlePublish = () => {
+		if (
+			!formData.title ||
+			!formData.description ||
+			!formData.price ||
+			!formData.imageUrl ||
+			!formData.contentLink
+		) {
+			alert("Please fill all fields");
+			return;
+		}
+
+		const tx = createListLectureTx(
+			packageId,
+			formData.title,
+			formData.description,
+			formData.imageUrl,
+			formData.contentLink,
+			Number(formData.price)
+		);
+
+		signAndExecute(
+			{ transaction: tx },
+			{
+				onSuccess: () => {
+					alert("Course Published!");
+					setFormData({
+						title: "",
+						description: "",
+						price: "",
+						imageUrl: "",
+						contentLink: "",
+					});
+					onBack();
+				},
+				onError: (err) => {
+					console.error(err);
+					alert("Failed to publish course");
+				},
+			}
+		);
 	};
 
 	return (
@@ -70,7 +113,7 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 
 					<Box>
 						<Text as="div" size="2" mb="1" weight="bold">
-							Price (EP)
+							Price (SUITUDY)
 						</Text>
 						<TextField.Root
 							name="price"
@@ -124,7 +167,7 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 						<Button variant="soft" color="gray" onClick={onBack}>
 							Cancel
 						</Button>
-						<Button onClick={handleSubmit}>Publish Course</Button>
+						<Button onClick={handlePublish}>Publish Course</Button>
 					</Flex>
 				</Flex>
 			</Card>

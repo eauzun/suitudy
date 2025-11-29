@@ -1,4 +1,4 @@
-import { ConnectButton } from "@mysten/dapp-kit";
+
 import {
 	Box,
 	Button,
@@ -16,7 +16,8 @@ import { useState, useEffect } from "react";
 import { Marketplace } from "./components/Marketplace";
 import { CourseDetail } from "./components/CourseDetail";
 import { CreateCourse } from "./components/CreateCourse";
-import { ThemeToggle } from "./components/ThemeToggle";
+import { TokenShop } from "./components/TokenShop";
+import { Navbar } from "./components/Navbar";
 
 interface Course {
 	id: number;
@@ -27,7 +28,7 @@ interface Course {
 }
 
 function App() {
-	const [view, setView] = useState<"landing" | "marketplace" | "create-course">(
+	const [view, setView] = useState<"landing" | "marketplace" | "create-course" | "token-shop">(
 		"landing"
 	);
 	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -51,7 +52,7 @@ function App() {
 		const handlePopState = () => {
 			if (selectedCourse) {
 				setSelectedCourse(null);
-			} else if (view === "marketplace" || view === "create-course") {
+			} else if (view !== "landing") {
 				setView("landing");
 			}
 		};
@@ -70,6 +71,11 @@ function App() {
 		setView("create-course");
 	};
 
+	const goToTokenShop = () => {
+		window.history.pushState(null, "", "?page=token-shop");
+		setView("token-shop");
+	};
+
 	const goToCourseDetail = (course: Course) => {
 		window.history.pushState(null, "", "?course=" + course.id);
 		setSelectedCourse(course);
@@ -81,29 +87,11 @@ function App() {
 
 	return (
 		<Theme appearance={theme}>
-			{/* Navbar */}
-			<Flex
-				position="sticky"
-				px="4"
-				py="2"
-				justify="between"
-				align="center"
-				style={{
-					borderBottom: "1px solid var(--gray-a2)",
-					backgroundColor: "var(--color-background)",
-					zIndex: 10,
-					top: 0,
-				}}
-			>
-				<Box>
-					<Heading size="5">SuiAcademy</Heading>
-				</Box>
-
-				<Flex gap="3" align="center">
-					<ThemeToggle currentTheme={theme} onToggle={toggleTheme} />
-					<ConnectButton />
-				</Flex>
-			</Flex>
+			<Navbar
+				onOpenShop={goToTokenShop}
+				currentTheme={theme}
+				onToggleTheme={toggleTheme}
+			/>
 
 			{view === "landing" ? (
 				/* Hero Section */
@@ -221,6 +209,8 @@ function App() {
 				/>
 			) : view === "create-course" ? (
 				<CreateCourse onBack={() => window.history.back()} />
+			) : view === "token-shop" ? (
+				<TokenShop />
 			) : (
 				<Marketplace
 					onBack={() => window.history.back()}

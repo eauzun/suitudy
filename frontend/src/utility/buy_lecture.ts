@@ -32,7 +32,7 @@ export const createBuyLectureTx = (
 
 	// --- MOVE FONKSİYON ÇAĞRISI ---
 	tx.moveCall({
-		target: `${packageId}::suitdy::buy_lecture`,
+		target: `${packageId}::suitudy::buy_lecture`,
 		arguments: [
 		tx.object(lectureId), // 1. Argüman: Ders Objesi (Shared)
 		paymentCoin,          // 2. Argüman: Hazırladığımız Ödeme Coini

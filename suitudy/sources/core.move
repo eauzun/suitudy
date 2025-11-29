@@ -70,7 +70,7 @@ module education_platform::suitudy;
 		let (treasury, metadata) = coin::create_currency(
 			witness, 
 			9, 
-			b"SUITDY", 
+			b"SUITUDY", 
 			b"Suidity Token", 
 			b"Bank currency", 
 			option::none(), 
@@ -96,7 +96,7 @@ module education_platform::suitudy;
         ctx: &mut TxContext
     ) {
         let sui_value = coin::value(&payment);
-        let token_amount = sui_value * 10; // Örnek: 1 SUI = 10 SUITDY
+        let token_amount = sui_value * 10; // Örnek: 1 SUI = 10 SUITUDY
 
         // Gelen SUI'yi kasaya kilitle
         let paid_balance = coin::into_balance(payment);
@@ -122,7 +122,7 @@ module education_platform::suitudy;
         ctx: &mut TxContext
     ) {
         let token_value = coin::value(&payment);
-        let sui_amount = token_value / 10; // Örnek: 10 SUITDY = 1 SUI
+        let sui_amount = token_value / 10; // Örnek: 10 SUITUDY = 1 SUI
 
         // Kasada yeterli SUI var mı?
         assert!(balance::value(&platform.sui_reserve) >= sui_amount);

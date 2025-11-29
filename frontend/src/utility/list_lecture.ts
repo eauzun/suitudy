@@ -1,6 +1,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 
-export const createListLectureTx = (
+export const listLecture = (
 		packageId: string,
 		title: string,
 		description: string,
@@ -13,7 +13,7 @@ export const createListLectureTx = (
 	const priceInMist = BigInt(price * 1_000_000_000);
 
 	tx.moveCall({
-		target: `${packageId}::suitdy::list_lecture`,
+		target: `${packageId}::suitudy::list_lecture`,
 		arguments: [
 		tx.pure.string(title),
 		tx.pure.string(description),

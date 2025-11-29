@@ -1,6 +1,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 
-export const createSellTokenTx = (
+export const sellToken = (
 	packageId: string,
 	bankID: string,
   	amountToSell: number, 
@@ -35,7 +35,7 @@ export const createSellTokenTx = (
 
 	// --- MOVE ÇAĞRISI ---
 	tx.moveCall({
-	target: `${packageId}::suitdy::sell_token`,
+	target: `${packageId}::suitudy::sell_token`,
 	arguments: [
 		tx.object(bankID), // Platform (Bank)
 		coinToPay,          // Hazırladığımız SUITUDY Coini
