@@ -10,8 +10,6 @@ module education_platform::suitudy;
     use sui::object::{Self, UID, ID};
     use sui::tx_context::{Self, TxContext};
 
-	// === Structs ===
-
 	public struct SUITUDY has drop {}
 
 	public struct Bank has key {
@@ -36,8 +34,6 @@ module education_platform::suitudy;
 		price: u64,
 		seller: address
 	}
-
-//EVENTS
 
 	public struct LectureListed has copy, drop {
 		lecture_id: ID,
@@ -174,7 +170,6 @@ module education_platform::suitudy;
 		coin: Coin<SUITUDY>,
 		ctx: &mut TxContext){
 
-
 		assert!(coin::value(&coin) == lecture.price);
 
 		transfer::public_transfer(coin, lecture.seller);
@@ -197,3 +192,9 @@ module education_platform::suitudy;
 
 		transfer::transfer(pass, ctx.sender());
 	}
+
+    // === Test Helpers ===
+    #[test_only]
+    public fun init_for_testing(ctx: &mut TxContext) {
+        init(SUITUDY {}, ctx)
+    }
