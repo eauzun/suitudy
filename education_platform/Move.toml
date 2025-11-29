@@ -1,0 +1,15 @@
+[package]
+name = "education_platform"
+edition = "2024.beta"
+license = "MIT"
+authors = ["Be Water My Friend"]
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+
+[addresses]
+education_platform = "0x0"
+
+[dev-dependencies]
+
+[dev-addresses]
