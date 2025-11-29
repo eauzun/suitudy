@@ -133,6 +133,14 @@ module education_platform::suitudy;
         // Karşılığında kasadan SUI çıkar ve kullanıcıya ver
         let sui_payment = balance::split(&mut platform.sui_reserve, sui_amount);
         let sui_coin = coin::from_balance(sui_payment, ctx);
+
+		event::emit(TokenSold {
+			seller: ctx.sender(),
+			tokens_sold: token_value,
+			sui_received: sui_amount,
+			timestamp: ctx.epoch_timestamp_ms()
+		});
+
         transfer::public_transfer(sui_coin, ctx.sender());
     }
 
@@ -192,6 +200,31 @@ module education_platform::suitudy;
 
 		transfer::transfer(pass, ctx.sender());
 	}
+
+	public entry fun mint_for_testing(
+        bank: &mut Bank,
+        ctx: &mut TxContext
+    ) {
+        let amount = 100 * 1_000_000_000; 
+        
+        let coins = coin::mint(&mut bank.treasury, amount, ctx);
+        
+        transfer::public_transfer(coins, ctx.sender());
+    }
+
+	public entry fun burn_pass(pass: LecturePass, ctx: &mut TxContext) {
+        let LecturePass { id, lecture_id: _, student: _, title: _ } = pass;
+        
+        object::delete(id);
+    }
+
+	public entry fun delete_lecture(lecture: Lecture, ctx: &mut TxContext) {
+        assert!(lecture.seller == ctx.sender());
+
+        let Lecture { id, title: _, description: _, image_url: _, content_url: _, price: _, seller: _ } = lecture;
+
+        object::delete(id);
+    }
 
     // === Test Helpers ===
     #[test_only]
