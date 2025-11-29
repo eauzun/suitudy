@@ -20,20 +20,24 @@ module education_platform::suitudy;
 		sui_reserve: Balance<SUI>
 	}
 
-	public struct Lecture has key, store {
+	public struct LecturePass has key {
+        id: UID,
+        lecture_id: ID,
+        student: address,
+        title: String
+    }
+
+	public struct Lecture has key {
 		id: UID,
 		title: String,
 		description: String,
 		image_url: String,
-		content_url: String
-	}
-
-	public struct ListLecture has key, store {
-		id: UID,
-		lecture: Lecture,
+		content_url: String,
 		price: u64,
 		seller: address
 	}
+
+//EVENTS
 
 	public struct LectureListed has copy, drop {
 		lecture_id: ID,
@@ -104,6 +108,14 @@ module education_platform::suitudy;
 
         // Karşılığında yeni Token bas ve kullanıcıya ver
         let token_coin = coin::mint(&mut platform.treasury, token_amount, ctx);
+
+		event::emit(TokenPurchased {
+			buyer: ctx.sender(),
+			sui_spent: sui_value,
+			tokens_received: token_amount,
+			timestamp: ctx.epoch_timestamp_ms()
+    	});
+
         transfer::public_transfer(token_coin, ctx.sender());
     }
 
@@ -128,77 +140,60 @@ module education_platform::suitudy;
         transfer::public_transfer(sui_coin, ctx.sender());
     }
 
-	public entry fun create_lecture(
+	public entry fun list_lecture(
 		title: String,
 		description: String,
-		price: u64,
-		instructor: address,
 		image_url: String,
 		content_url: String,
+		price: u64,
 		ctx: &mut TxContext){
 
 		let lecture = Lecture{
 			id: object::new(ctx),
 			title,
 			description,
-			price,
-			instructor: ctx.sender(),
 			image_url,
-			content_url
-		};
-
-		let list_lecture = ListLecture{
-			id: object::new(ctx),
-			lecture: lecture,
+			content_url,
 			price,
 			seller: ctx.sender()
 		};
 
 		event::emit(LectureListed{
-			lecture_id: object::id(&list_lecture),
+			lecture_id: object::id(&lecture),
 			instructor: ctx.sender(),
-			title: lecture.title,
-			price,
+			title: title,
+			price: price,
 			timestamp: ctx.epoch_timestamp_ms()
 		});
 
-		transfer::transfer(lecture, ctx.sender());
-		transfer::share_object(list_lecture);
+		transfer::share_object(lecture);
 	}
 
 	public entry fun buy_lecture(
-		list_lecture: ListLecture,
-		coin: Coin<SUI>,
+		lecture: &Lecture,
+		coin: Coin<SUITUDY>,
 		ctx: &mut TxContext){
 
-		let ListLecture { id, lecture, price, seller } = list_lecture;
-		assert!(coin.value() == price);
+
+		assert!(coin::value(&coin) == lecture.price);
+
+		transfer::public_transfer(coin, lecture.seller);
 
 		// Satıcıya ödemeyi yap
-		transfer::public_transfer(coin, list_lecture.seller);
-		transfer::public_transfer(lecture, ctx.sender());
-
+		let pass = LecturePass {
+            id: object::new(ctx),
+            lecture_id: object::id(lecture), // Hangi derse ait olduğu
+            student: ctx.sender(),           // Kimin aldığı (Provenance)
+            title: lecture.title,            // Başlık kopyalandı
+		};
 
 		event::emit(LecturePurchased{
-			lecture_id: object::id(&list_lecture.lecture),
+			lecture_id: object::id(lecture),
 			student: ctx.sender(),
-			instructor: list_lecture.lecture.instructor,
-			price: list_lecture.price,
+			instructor: lecture.seller,
+			price: lecture.price,
 			timestamp: ctx.epoch_timestamp_ms()
 		});
 
-		transfer::transfer(list_lecture.lecture, ctx.sender());
-	}
-
-	public entry fun transfer_lecture(lecture: lectures, to: address){
-		transfer::public_transfer(lecture,to);
-	}
-
-	//??????????
-	public entry fun transfer_tokenToWallet(coin: Coin<SUI>, token: suidityToken){
-		transfer::public_transfer(token, coin);
-	}
-
-	public entry fun transfer_walletToToken(coin: Coin<SUI>, token: suidityToken){
-		transfer::public_transfer(coin, token)
+		transfer::transfer(pass, ctx.sender());
 	}
