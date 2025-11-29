@@ -161,7 +161,7 @@ module education_platform::core {
     // ========= USER PROFILE FUNCTIONS =========
     
     /// Create user profile
-    public fun create_profile(ctx: &mut TxContext) {
+    public entry fun create_profile(ctx: &mut TxContext) { //argüman
         let profile = UserProfile {
             id: object::new(ctx),
             owner: ctx.sender(),
@@ -178,7 +178,7 @@ module education_platform::core {
     // ========= EP TOKEN FUNCTIONS =========
     
     /// Buy Education Points with SUI
-    public fun buy_ep(
+    public entry fun buy_ep(
         platform: &mut Platform,
         payment: Coin<SUI>,
         ctx: &mut TxContext
@@ -208,7 +208,7 @@ module education_platform::core {
     }
     
     /// Sell Education Points for SUI
-    public fun sell_ep(
+    public entry fun sell_ep(
         platform: &mut Platform,
         ep_payment: Coin<CORE>,
         ctx: &mut TxContext
@@ -240,7 +240,7 @@ module education_platform::core {
     }
     
     /// Deposit EP to user profile
-    public fun deposit_ep_to_profile(
+    public entry fun deposit_ep_to_profile(
         profile: &mut UserProfile,
         ep_coin: Coin<CORE>,
     ) {
@@ -251,7 +251,7 @@ module education_platform::core {
     // ========= COURSE FUNCTIONS =========
     
     /// Create a new course
-    public fun create_course(
+    public entry fun create_course(
         platform: &mut Platform,
         profile: &mut UserProfile,
         title: String,
@@ -300,7 +300,7 @@ module education_platform::core {
     }
     
     /// Enroll in a course - using EP coins directly
-    public fun enroll_in_course_with_coin(
+    public entry fun enroll_in_course_with_coin(
         platform: &mut Platform,
         course: &mut Course,
         profile: &mut UserProfile,
