@@ -18,9 +18,10 @@ import { CourseDetail } from "./components/CourseDetail";
 import { CreateCourse } from "./components/CreateCourse";
 import { TokenShop } from "./components/TokenShop";
 import { Navbar } from "./components/Navbar";
+import { UserProfile } from "./components/UserProfile";
 
 interface Course {
-	id: number;
+	id: string;
 	title: string;
 	price: number;
 	instructor: string;
@@ -28,7 +29,7 @@ interface Course {
 }
 
 function App() {
-	const [view, setView] = useState<"landing" | "marketplace" | "create-course" | "token-shop">(
+	const [view, setView] = useState<"landing" | "marketplace" | "create-course" | "token-shop" | "profile">(
 		"landing"
 	);
 	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -76,6 +77,11 @@ function App() {
 		setView("token-shop");
 	};
 
+	const goToProfile = () => {
+		window.history.pushState(null, "", "?page=profile");
+		setView("profile");
+	};
+
 	const goToCourseDetail = (course: Course) => {
 		window.history.pushState(null, "", "?course=" + course.id);
 		setSelectedCourse(course);
@@ -85,12 +91,20 @@ function App() {
 		setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 	};
 
+	const goToHome = () => {
+		window.history.pushState(null, "", "?page=landing");
+		setView("landing");
+		setSelectedCourse(null);
+	};
+
 	return (
 		<Theme appearance={theme}>
 			<Navbar
 				onOpenShop={goToTokenShop}
+				onOpenProfile={goToProfile}
 				currentTheme={theme}
 				onToggleTheme={toggleTheme}
+				onHome={goToHome}
 			/>
 
 			{view === "landing" ? (
@@ -211,6 +225,8 @@ function App() {
 				<CreateCourse onBack={() => window.history.back()} />
 			) : view === "token-shop" ? (
 				<TokenShop />
+			) : view === "profile" ? (
+				<UserProfile />
 			) : (
 				<Marketplace
 					onBack={() => window.history.back()}

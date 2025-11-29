@@ -10,8 +10,10 @@ import {
 	Text,
 } from "@radix-ui/themes";
 
+import { BuyButton } from "./BuyButton";
+
 interface Course {
-	id: number;
+	id: string;
 	title: string;
 	price: number;
 	instructor: string;
@@ -26,7 +28,7 @@ interface CourseDetailProps {
 export function CourseDetail({ course, onBack }: CourseDetailProps) {
 	return (
 		<Container size="4" p="4">
-			<Button variant="ghost" onClick={onBack} mb="4">
+			<Button variant="ghost" onClick={onBack} mb="4" style={{ cursor: "pointer" }}>
 				← Back to Marketplace
 			</Button>
 
@@ -45,6 +47,7 @@ export function CourseDetail({ course, onBack }: CourseDetailProps) {
 							borderRadius: "var(--radius-3)",
 							backgroundColor: "var(--gray-5)",
 						}}
+						onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/600x400")}
 					/>
 				</Inset>
 
@@ -63,16 +66,10 @@ export function CourseDetail({ course, onBack }: CourseDetailProps) {
 					</Box>
 
 					<Text size="6" color="iris" weight="bold">
-						{course.price} EP
+						{course.price} SUITUDY
 					</Text>
 
-					<Button
-						size="3"
-						style={{ width: "100%" }}
-						onClick={() => console.log("Connect to Sui Logic here")}
-					>
-						Enroll Now
-					</Button>
+					<BuyButton lectureId={course.id} price={course.price} />
 
 					<Separator my="4" />
 

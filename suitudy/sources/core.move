@@ -71,7 +71,7 @@ module education_platform::suitudy;
 			witness, 
 			9, 
 			b"SUITUDY", 
-			b"Suidity Token", 
+			b"suitudy Token", 
 			b"Bank currency", 
 			option::none(), 
 			ctx

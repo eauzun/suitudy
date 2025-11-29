@@ -1,6 +1,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 
-export const createDeleteLectureTx = (packageId: string, lectureId: string) => {
+export const deleteLecture = (packageId: string, lectureId: string) => {
   const tx = new Transaction();
 
   tx.moveCall({

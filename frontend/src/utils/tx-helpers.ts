@@ -119,3 +119,29 @@ export const createBuyLectureTx = (
 
 	return tx;
 };
+
+export const createBurnPassTx = (packageId: string, passId: string) => {
+	const tx = new Transaction();
+
+	tx.moveCall({
+		target: `${packageId}::suitudy::burn_pass`,
+		arguments: [
+			tx.object(passId),
+		],
+	});
+
+	return tx;
+};
+
+export const createDeleteLectureTx = (packageId: string, lectureId: string) => {
+	const tx = new Transaction();
+
+	tx.moveCall({
+		target: `${packageId}::suitudy::delete_lecture`,
+		arguments: [
+			tx.object(lectureId),
+		],
+	});
+
+	return tx;
+};

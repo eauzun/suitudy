@@ -1,7 +1,9 @@
 import { Badge, Box, Button, Callout, Card, Container, Flex, Grid, Heading, Inset, Text } from "@radix-ui/themes";
-import { useSuiClientQuery } from "@mysten/dapp-kit";
+import { useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
+import { useEffect, useState } from "react";
 import { useNetworkVariables } from "../networkConfig";
 import { BuyButton } from "./BuyButton";
+import { SuiObjectResponse } from "@mysten/sui/client";
 
 interface Course {
 	id: string;
@@ -45,6 +47,34 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 			};
 		}) || [];
 
+	const [verifiedCourses, setVerifiedCourses] = useState<Course[]>([]);
+	const client = useSuiClient();
+
+	useEffect(() => {
+		const verifyCourses = async () => {
+			if (courses.length === 0) {
+				setVerifiedCourses([]);
+				return;
+			}
+
+			const ids = courses.map((c) => c.id);
+			const objects = await client.multiGetObjects({
+				ids,
+				options: { showContent: true },
+			});
+
+			const validIds = new Set(
+				objects
+					.filter((obj: SuiObjectResponse) => obj.data && !obj.error)
+					.map((obj: SuiObjectResponse) => obj.data?.objectId)
+			);
+
+			setVerifiedCourses(courses.filter((c) => validIds.has(c.id)));
+		};
+
+		verifyCourses();
+	}, [events, client]);
+
 	return (
 		<Container size="4" p="4">
 			<Flex justify="between" align="center" mb="6">
@@ -62,12 +92,12 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 				</Callout.Root>
 			)}
 
-			{!isPending && !error && courses.length === 0 && (
+			{!isPending && !error && verifiedCourses.length === 0 && (
 				<Text>No courses found.</Text>
 			)}
 
 			<Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4">
-				{courses.map((course) => (
+				{verifiedCourses.map((course) => (
 					<Box
 						key={course.id}
 						onClick={() => onCourseSelect(course)}
