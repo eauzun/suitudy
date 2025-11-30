@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, IconButton } from "@radix-ui/themes";
 import { SunIcon, MoonIcon, HomeIcon, PersonIcon, TokensIcon } from "@radix-ui/react-icons";
 import { GoogleLoginButton } from "./GoogleLoginButton";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount, ConnectButton } from "@mysten/dapp-kit";
 
 interface NavbarProps {
 	onOpenShop: () => void;
@@ -48,6 +48,8 @@ export function Navbar({
 
 					{/* Right side - Actions */}
 					<Flex align="center" gap="3">
+						<ConnectButton />
+
 						{/* Show Token Shop and Profile only if logged in */}
 						{account && (
 							<>
