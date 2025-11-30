@@ -3,7 +3,6 @@ import { useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
 import { useNetworkVariables } from "../networkConfig";
 import { BuyButton } from "./BuyButton";
-import type { SuiObjectResponse } from "@mysten/sui/client";
 
 interface Course {
 	id: string;
