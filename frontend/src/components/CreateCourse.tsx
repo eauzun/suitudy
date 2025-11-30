@@ -9,7 +9,7 @@ import {
 	TextField,
 } from "@radix-ui/themes";
 import { useState } from "react";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useTransactionExecution } from "../hooks/useTransactionExecution";
 import { createListLectureTx } from "../utils/tx-helpers";
 import { useNetworkVariables } from "../networkConfig";
 
@@ -18,7 +18,7 @@ interface CreateCourseProps {
 }
 
 export function CreateCourse({ onBack }: CreateCourseProps) {
-	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { executeTransaction } = useTransactionExecution();
 	const { packageId } = useNetworkVariables() as any;
 	const [formData, setFormData] = useState({
 		title: "",
@@ -35,7 +35,7 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handlePublish = () => {
+	const handlePublish = async () => {
 		if (
 			!formData.title ||
 			!formData.description ||
@@ -47,35 +47,31 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 			return;
 		}
 
-		const tx = createListLectureTx(
-			packageId,
-			formData.title,
-			formData.description,
-			formData.imageUrl,
-			formData.contentLink,
-			Number(formData.price)
-		);
+		try {
+			const tx = createListLectureTx(
+				packageId,
+				formData.title,
+				formData.description,
+				formData.imageUrl,
+				formData.contentLink,
+				Number(formData.price)
+			);
 
-		signAndExecute(
-			{ transaction: tx },
-			{
-				onSuccess: () => {
-					alert("Course Published!");
-					setFormData({
-						title: "",
-						description: "",
-						price: "",
-						imageUrl: "",
-						contentLink: "",
-					});
-					onBack();
-				},
-				onError: (err) => {
-					console.error(err);
-					alert("Failed to publish course");
-				},
-			}
-		);
+			await executeTransaction(tx);
+
+			alert("Course Published!");
+			setFormData({
+				title: "",
+				description: "",
+				price: "",
+				imageUrl: "",
+				contentLink: "",
+			});
+			onBack();
+		} catch (err: any) {
+			console.error(err);
+			alert("Failed to publish course: " + err.message);
+		}
 	};
 
 	return (

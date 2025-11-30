@@ -1,5 +1,5 @@
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useTransactionExecution } from "../hooks/useTransactionExecution";
 import { useNetworkVariables } from "../networkConfig";
 import { createBurnPassTx } from "../utils/tx-helpers";
 
@@ -9,25 +9,19 @@ interface BurnButtonProps {
 }
 
 export function BurnButton({ passId, onSuccess }: BurnButtonProps) {
-	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { executeTransaction } = useTransactionExecution();
 	const { packageId } = useNetworkVariables() as any;
 
-	const handleBurn = () => {
-		const tx = createBurnPassTx(packageId, passId);
-
-		signAndExecute(
-			{ transaction: tx },
-			{
-				onSuccess: () => {
-					alert("Burned successfully");
-					onSuccess?.();
-				},
-				onError: (err) => {
-					console.error(err);
-					alert("Failed to burn pass");
-				},
-			}
-		);
+	const handleBurn = async () => {
+		try {
+			const tx = createBurnPassTx(packageId, passId);
+			await executeTransaction(tx);
+			alert("Burned successfully");
+			onSuccess?.();
+		} catch (err: any) {
+			console.error(err);
+			alert("Failed to burn pass: " + err.message);
+		}
 	};
 
 	return (

@@ -1,5 +1,5 @@
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useTransactionExecution } from "../hooks/useTransactionExecution";
 import { useNetworkVariables } from "../networkConfig";
 import { createDeleteLectureTx } from "../utils/tx-helpers";
 
@@ -9,25 +9,19 @@ interface DeleteLectureButtonProps {
 }
 
 export function DeleteLectureButton({ lectureId, onSuccess }: DeleteLectureButtonProps) {
-	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { executeTransaction } = useTransactionExecution();
 	const { packageId } = useNetworkVariables() as any;
 
-	const handleDelete = () => {
-		const tx = createDeleteLectureTx(packageId, lectureId);
-
-		signAndExecute(
-			{ transaction: tx },
-			{
-				onSuccess: () => {
-					alert("Course deleted");
-					onSuccess?.();
-				},
-				onError: (err) => {
-					console.error(err);
-					alert("Failed to delete lecture");
-				},
-			}
-		);
+	const handleDelete = async () => {
+		try {
+			const tx = createDeleteLectureTx(packageId, lectureId);
+			await executeTransaction(tx);
+			alert("Course deleted");
+			onSuccess?.();
+		} catch (err: any) {
+			console.error(err);
+			alert("Failed to delete lecture: " + err.message);
+		}
 	};
 
 	return (

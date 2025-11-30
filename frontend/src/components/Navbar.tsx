@@ -42,7 +42,7 @@ export function Navbar({
 							style={{ cursor: "pointer" }}
 						>
 							<HomeIcon />
-							<Box ml="2">EduChain</Box>
+							<Box ml="2">Suitudy</Box>
 						</Button>
 					</Flex>
 

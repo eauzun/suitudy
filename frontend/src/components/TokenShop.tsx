@@ -11,16 +11,16 @@ import {
 import { useState } from "react";
 import {
 	useCurrentAccount,
-	useSignAndExecuteTransaction,
 	useSuiClientQuery,
 } from "@mysten/dapp-kit";
+import { useTransactionExecution } from "../hooks/useTransactionExecution";
 import { useNetworkVariables } from "../networkConfig";
 import { createBuyTokenTx, createSellTokenTx } from "../utils/tx-helpers";
 
 export function TokenShop() {
 	const [mode, setMode] = useState<"buy" | "sell">("buy");
 	const account = useCurrentAccount();
-	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { executeTransaction } = useTransactionExecution();
 	const { packageId, bankID } = useNetworkVariables() as any;
 
 	// Fetch user's SUITUDY tokens for Sell Mode
@@ -35,26 +35,20 @@ export function TokenShop() {
 		}
 	);
 
-	const handleBuy = (amountInSui: number) => {
+	const handleBuy = async (amountInSui: number) => {
 		if (!account) return alert("Please connect wallet first");
 
-		const tx = createBuyTokenTx(packageId, bankID, amountInSui);
-
-		signAndExecute(
-			{ transaction: tx },
-			{
-				onSuccess: () => {
-					alert("Tokens bought successfully!");
-				},
-				onError: (err) => {
-					console.error(err);
-					alert("Failed to buy tokens");
-				},
-			}
-		);
+		try {
+			const tx = createBuyTokenTx(packageId, bankID, amountInSui);
+			await executeTransaction(tx);
+			alert("Tokens bought successfully!");
+		} catch (err: any) {
+			console.error(err);
+			alert("Failed to buy tokens: " + err.message);
+		}
 	};
 
-	const handleSell = (amountInToken: number) => {
+	const handleSell = async (amountInToken: number) => {
 		if (!account) return alert("Please connect wallet first");
 		if (!userCoins?.data) return;
 
@@ -66,20 +60,11 @@ export function TokenShop() {
 				userCoins.data
 			);
 
-			signAndExecute(
-				{ transaction: tx },
-				{
-					onSuccess: () => {
-						alert("Tokens sold successfully!");
-					},
-					onError: (err) => {
-						console.error(err);
-						alert("Failed to sell tokens");
-					},
-				}
-			);
+			await executeTransaction(tx);
+			alert("Tokens sold successfully!");
 		} catch (e: any) {
-			alert(e.message);
+			console.error(e);
+			alert("Failed to sell tokens: " + e.message);
 		}
 	};
 

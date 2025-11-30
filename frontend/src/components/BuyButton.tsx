@@ -1,5 +1,6 @@
 import { Button } from "@radix-ui/themes";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClientQuery } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
+import { useTransactionExecution } from "../hooks/useTransactionExecution";
 import { useNetworkVariables } from "../networkConfig";
 import { createBuyLectureTx } from "../utils/tx-helpers";
 
@@ -10,7 +11,7 @@ interface BuyButtonProps {
 
 export function BuyButton({ lectureId, price }: BuyButtonProps) {
 	const account = useCurrentAccount();
-	const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+	const { executeTransaction } = useTransactionExecution();
 	const { packageId } = useNetworkVariables() as any;
 
 	const { data: userCoins, isLoading } = useSuiClientQuery(
@@ -24,25 +25,18 @@ export function BuyButton({ lectureId, price }: BuyButtonProps) {
 		}
 	);
 
-	const handleBuy = (e: React.MouseEvent) => {
+	const handleBuy = async (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent card click
 		if (!account) return alert("Please connect wallet");
 		if (!userCoins?.data) return alert("No tokens found");
 
 		try {
 			const tx = createBuyLectureTx(packageId, lectureId, price, userCoins.data);
-			signAndExecute(
-				{ transaction: tx },
-				{
-					onSuccess: () => alert("Course purchased successfully!"),
-					onError: (err) => {
-						console.error(err);
-						alert("Failed to purchase course");
-					},
-				}
-			);
+			await executeTransaction(tx);
+			alert("Course purchased successfully!");
 		} catch (err: any) {
-			alert(err.message);
+			console.error(err);
+			alert("Failed to purchase course: " + err.message);
 		}
 	};
 

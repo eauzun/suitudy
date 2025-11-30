@@ -64,7 +64,7 @@ export function GoogleLoginButton() {
 
   return (
     <ConnectButton
-      connectText={isConnecting ? "Connecting..." : "Login with Google"}
+      connectText={isConnecting ? "Connecting..." : "Login"}
       style={{
         backgroundColor: "var(--accent-9)",
         color: "white",
