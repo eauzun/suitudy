@@ -109,6 +109,9 @@ export function CreateCourse({ onBack }: CreateCourseProps) {
 							onChange={handleChange}
 							style={{ minHeight: 100 }}
 						/>
+						<Text size="1" color="gray" mt="1">
+							Markdown is supported. You can use # for headers, - for lists, etc.
+						</Text>
 					</Box>
 
 					<Box>

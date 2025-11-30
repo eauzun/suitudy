@@ -26,6 +26,7 @@ interface Course {
 	price: number;
 	instructor: string;
 	image: string;
+	description: string;
 }
 
 function App() {

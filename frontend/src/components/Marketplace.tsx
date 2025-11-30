@@ -11,6 +11,7 @@ interface Course {
 	price: number;
 	instructor: string;
 	image: string;
+	description: string;
 }
 
 interface MarketplaceProps {
@@ -45,6 +46,7 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 				instructor: parsed.instructor,
 				price: Number(parsed.price) / 1_000_000_000,
 				image: parsed.image_url || "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80",
+				description: "", // Placeholder, will be fetched
 			};
 		}) || [];
 
@@ -72,7 +74,7 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 					if (fields) {
 						validCoursesMap.set(obj.data.objectId, {
 							image: fields.image_url,
-							// We can also update other fields if needed, but image is the missing one
+							description: fields.description,
 						});
 					}
 				}
@@ -82,7 +84,8 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 				.filter((c) => validCoursesMap.has(c.id))
 				.map((c) => ({
 					...c,
-					image: validCoursesMap.get(c.id).image || c.image, // Use object image, fallback to event image (which is likely undefined)
+					image: validCoursesMap.get(c.id).image || c.image,
+					description: validCoursesMap.get(c.id).description || "No description available.",
 				}));
 
 			setVerifiedCourses(verified);
