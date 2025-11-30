@@ -14,14 +14,10 @@ export function useTransactionExecution() {
 
         if (enokiKeypair && account?.address === enokiKeypair.toSuiAddress()) {
             
-            // --- HATA DÜZELTME BURADA ---
-            // TypeScript'e "Sen karışma, ben bu fonksiyonun orada olduğunu biliyorum" diyoruz.
-            // Ayrıca 'sponsorAndExecuteTransaction' metodunu kullanıyoruz (Genelde doğru isim budur).
-            
-            return await (enokiFlow as any).sponsorAndExecuteTransaction({
+            // NOTE: This is a self-funded transaction. The user's zkLogin wallet must have SUI balance.
+            return await (enokiFlow as any).executeTransaction({
                 transaction: tx,
                 network: "testnet",
-                client: (enokiFlow as any).client, // Client'ı da garantiye alalım
             });
 
         } else {
