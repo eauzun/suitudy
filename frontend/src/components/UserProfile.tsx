@@ -77,6 +77,7 @@ export function UserProfile() {
 	const client = useSuiClient();
 
 	// Verify existence of courses (filter out deleted ones)
+	// Verify existence of courses (filter out deleted ones) and fetch latest data
 	useEffect(() => {
 		const verifyCourses = async () => {
 			if (myCourses.length === 0) {
@@ -90,13 +91,27 @@ export function UserProfile() {
 				options: { showContent: true },
 			});
 
-			const validIds = new Set(
-				objects
-					.filter((obj) => obj.data && !obj.error)
-					.map((obj) => obj.data?.objectId)
-			);
+			const validCoursesMap = new Map();
 
-			setVerifiedCourses(myCourses.filter((c) => validIds.has(c.id)));
+			objects.forEach((obj) => {
+				if (obj.data && !obj.error) {
+					const fields = (obj.data.content as any)?.fields;
+					if (fields) {
+						validCoursesMap.set(obj.data.objectId, {
+							image: fields.image_url,
+						});
+					}
+				}
+			});
+
+			const verified = myCourses
+				.filter((c) => validCoursesMap.has(c.id))
+				.map((c) => ({
+					...c,
+					image: validCoursesMap.get(c.id).image || c.image,
+				}));
+
+			setVerifiedCourses(verified);
 		};
 
 		verifyCourses();
@@ -148,7 +163,7 @@ export function UserProfile() {
 								<Card key={obj.data?.objectId} size="2">
 									<Inset clip="padding-box" side="top" pb="current">
 										<img
-											src={fields.image_url}
+											src={fields.image_url || "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80"}
 											alt={fields.title}
 											style={{
 												display: "block",
@@ -157,7 +172,7 @@ export function UserProfile() {
 												height: 140,
 												backgroundColor: "var(--gray-5)",
 											}}
-											onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300")}
+											onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80")}
 										/>
 									</Inset>
 									<Flex direction="column" gap="2">
@@ -197,7 +212,7 @@ export function UserProfile() {
 							<Card key={course.id} size="2">
 								<Inset clip="padding-box" side="top" pb="current">
 									<img
-										src={course.image}
+										src={course.image || "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80"}
 										alt={course.title}
 										style={{
 											display: "block",
@@ -206,7 +221,7 @@ export function UserProfile() {
 											height: 140,
 											backgroundColor: "var(--gray-5)",
 										}}
-										onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300")}
+										onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80")}
 									/>
 								</Inset>
 								<Flex direction="column" gap="2">

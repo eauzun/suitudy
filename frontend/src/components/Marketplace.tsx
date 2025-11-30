@@ -38,6 +38,7 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 		.filter((event) => event.type.includes("::LectureListed"))
 		.map((event) => {
 			const parsed = event.parsedJson as any;
+			console.log("Parsed Event Data:", parsed); // Debugging log
 			return {
 				id: parsed.lecture_id,
 				title: parsed.title,
@@ -63,13 +64,28 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 				options: { showContent: true },
 			});
 
-			const validIds = new Set(
-				objects
-					.filter((obj: SuiObjectResponse) => obj.data && !obj.error)
-					.map((obj: SuiObjectResponse) => obj.data?.objectId)
-			);
+			const validCoursesMap = new Map();
 
-			setVerifiedCourses(courses.filter((c) => validIds.has(c.id)));
+			objects.forEach((obj) => {
+				if (obj.data && !obj.error) {
+					const fields = (obj.data.content as any)?.fields;
+					if (fields) {
+						validCoursesMap.set(obj.data.objectId, {
+							image: fields.image_url,
+							// We can also update other fields if needed, but image is the missing one
+						});
+					}
+				}
+			});
+
+			const verified = courses
+				.filter((c) => validCoursesMap.has(c.id))
+				.map((c) => ({
+					...c,
+					image: validCoursesMap.get(c.id).image || c.image, // Use object image, fallback to event image (which is likely undefined)
+				}));
+
+			setVerifiedCourses(verified);
 		};
 
 		verifyCourses();
@@ -106,7 +122,7 @@ export function Marketplace({ onBack, onCourseSelect }: MarketplaceProps) {
 						<Card size="2" style={{ transition: "transform 0.2s" }}>
 							<Inset clip="padding-box" side="top" pb="current">
 								<img
-									src={course.image}
+									src={course.image || "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80"}
 									alt={course.title}
 									style={{
 										display: "block",
