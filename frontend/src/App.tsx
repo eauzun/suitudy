@@ -1,4 +1,3 @@
-
 import {
 	Box,
 	Button,
@@ -19,6 +18,7 @@ import { CreateCourse } from "./components/CreateCourse";
 import { TokenShop } from "./components/TokenShop";
 import { Navbar } from "./components/Navbar";
 import { UserProfile } from "./components/UserProfile";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 interface Course {
 	id: string;
@@ -30,18 +30,19 @@ interface Course {
 }
 
 function App() {
-	const [view, setView] = useState<"landing" | "marketplace" | "create-course" | "token-shop" | "profile">(
-		"landing"
-	);
+	const account = useCurrentAccount();
+
+	const [view, setView] = useState<
+		"landing" | "marketplace" | "create-course" | "token-shop" | "profile"
+	>("landing");
+
 	const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 	const [theme, setTheme] = useState<"light" | "dark">("dark");
 
 	// Load theme from local storage
 	useEffect(() => {
 		const savedTheme = localStorage.getItem("theme") as "light" | "dark";
-		if (savedTheme) {
-			setTheme(savedTheme);
-		}
+		if (savedTheme) setTheme(savedTheme);
 	}, []);
 
 	// Save theme to local storage
@@ -58,7 +59,6 @@ function App() {
 				setView("landing");
 			}
 		};
-
 		window.addEventListener("popstate", handlePopState);
 		return () => window.removeEventListener("popstate", handlePopState);
 	}, [view, selectedCourse]);
@@ -98,6 +98,15 @@ function App() {
 		setSelectedCourse(null);
 	};
 
+	// ⬅️ EKLENEN KISIM — Eğitmen oluşturma tıklamasında login kontrolü
+	const handleTeachClick = () => {
+		if (!account) {
+			alert("Please login with Google first to create courses");
+			return;
+		}
+		goToCreateCourse();
+	};
+
 	return (
 		<Theme appearance={theme}>
 			<Navbar
@@ -130,13 +139,9 @@ function App() {
 								cursor: "pointer",
 								transition: "transform 0.2s",
 							}}
-							onMouseEnter={(e) =>
-								(e.currentTarget.style.transform = "scale(1.02)")
-							}
-							onMouseLeave={(e) =>
-								(e.currentTarget.style.transform = "scale(1)")
-							}
-							onClick={() => goToMarketplace()}
+							onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+							onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+							onClick={goToMarketplace}
 						>
 							<Inset clip="padding-box" side="top" pb="current">
 								<Flex
@@ -165,7 +170,7 @@ function App() {
 									</Button>
 								</Box>
 							</Flex>
-						</Card>
+                        </Card>
 
 						{/* Instructor Card */}
 						<Card
@@ -174,13 +179,9 @@ function App() {
 								cursor: "pointer",
 								transition: "transform 0.2s",
 							}}
-							onMouseEnter={(e) =>
-								(e.currentTarget.style.transform = "scale(1.02)")
-							}
-							onMouseLeave={(e) =>
-								(e.currentTarget.style.transform = "scale(1)")
-							}
-							onClick={() => goToCreateCourse()}
+							onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+							onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+							onClick={handleTeachClick}   
 						>
 							<Inset clip="padding-box" side="top" pb="current">
 								<Flex
@@ -204,12 +205,7 @@ function App() {
 									to your wallet.
 								</Text>
 								<Box mt="2">
-									<Button
-										size="3"
-										variant="soft"
-										color="jade"
-										style={{ width: "100%" }}
-									>
+									<Button size="3" variant="soft" color="jade" style={{ width: "100%" }}>
 										<Strong>Start Teaching</Strong>
 									</Button>
 								</Box>
@@ -218,10 +214,7 @@ function App() {
 					</Grid>
 				</Container>
 			) : selectedCourse ? (
-				<CourseDetail
-					course={selectedCourse}
-					onBack={() => window.history.back()}
-				/>
+				<CourseDetail course={selectedCourse} onBack={() => window.history.back()} />
 			) : view === "create-course" ? (
 				<CreateCourse onBack={() => window.history.back()} />
 			) : view === "token-shop" ? (

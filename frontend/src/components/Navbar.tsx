@@ -1,53 +1,89 @@
-import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { Box, Button, Flex, Heading } from "@radix-ui/themes";
-import { PersonIcon, RocketIcon } from "@radix-ui/react-icons";
-import { ThemeToggle } from "./ThemeToggle";
+import { Box, Button, Container, Flex, IconButton } from "@radix-ui/themes";
+import { SunIcon, MoonIcon, HomeIcon, PersonIcon, TokensIcon } from "@radix-ui/react-icons";
+import { GoogleLoginButton } from "./GoogleLoginButton";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 interface NavbarProps {
 	onOpenShop: () => void;
 	onOpenProfile: () => void;
+	onHome: () => void;
 	currentTheme: "light" | "dark";
 	onToggleTheme: () => void;
-	onHome: () => void;
 }
 
-export function Navbar({ onOpenShop, onOpenProfile, currentTheme, onToggleTheme, onHome }: NavbarProps) {
+export function Navbar({
+	onOpenShop,
+	onOpenProfile,
+	onHome,
+	currentTheme,
+	onToggleTheme,
+}: NavbarProps) {
 	const account = useCurrentAccount();
 
 	return (
-		<Flex
+		<Box
 			position="sticky"
-			px="4"
-			py="2"
-			justify="between"
-			align="center"
+			top="0"
 			style={{
-				borderBottom: "1px solid var(--gray-a2)",
-				backgroundColor: "var(--color-background)",
-				zIndex: 10,
-				top: 0,
+				background: "var(--color-background)",
+				borderBottom: "1px solid var(--gray-a3)",
+				backdropFilter: "blur(10px)",
+				zIndex: 1000,
 			}}
 		>
-			<Box onClick={onHome} style={{ cursor: "pointer" }}>
-				<Heading size="5">Suitudy</Heading>
-			</Box>
+			<Container size="4">
+				<Flex align="center" justify="between" py="3" px="4">
+					{/* Left side - Logo/Home */}
+					<Flex align="center" gap="4">
+						<Button
+							variant="ghost"
+							size="2"
+							onClick={onHome}
+							style={{ cursor: "pointer" }}
+						>
+							<HomeIcon />
+							<Box ml="2">EduChain</Box>
+						</Button>
+					</Flex>
 
-			<Flex gap="3" align="center">
-				<Button variant="ghost" onClick={onOpenShop} mr="4" style={{ cursor: "pointer" }}>
-					<RocketIcon />
-					Get Tokens
-				</Button>
+					{/* Right side - Actions */}
+					<Flex align="center" gap="3">
+						{/* Show Token Shop and Profile only if logged in */}
+						{account && (
+							<>
+								<Button
+									variant="soft"
+									size="2"
+									onClick={onOpenShop}
+								>
+									<TokensIcon />
+									<Box ml="2">Token Shop</Box>
+								</Button>
 
-				{account && (
-					<Button variant="ghost" onClick={onOpenProfile} mr="4" style={{ cursor: "pointer" }}>
-						<PersonIcon />
-						My Profile
-					</Button>
-				)}
+								<IconButton
+									variant="soft"
+									size="2"
+									onClick={onOpenProfile}
+								>
+									<PersonIcon />
+								</IconButton>
+							</>
+						)}
 
-				<ThemeToggle currentTheme={currentTheme} onToggle={onToggleTheme} />
-				<ConnectButton />
-			</Flex>
-		</Flex>
+						{/* Theme Toggle */}
+						<IconButton
+							variant="soft"
+							size="2"
+							onClick={onToggleTheme}
+						>
+							{currentTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+						</IconButton>
+
+						{/* Google Login Button */}
+						<GoogleLoginButton />
+					</Flex>
+				</Flex>
+			</Container>
+		</Box>
 	);
 }
