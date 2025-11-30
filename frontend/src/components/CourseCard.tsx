@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Card, Flex, Heading, Inset, Text } from "@radix-ui/themes";
+import { Badge, Button, Card, Flex, Heading, Inset, Text } from "@radix-ui/themes";
 
 interface CourseCardProps {
 	title: string;

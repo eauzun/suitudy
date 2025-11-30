@@ -1,5 +1,5 @@
 import { ConnectButton, useCurrentAccount, useCurrentWallet } from "@mysten/dapp-kit";
-import { Box, Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
+import { Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import { useState, useEffect } from "react";
 
 export function GoogleLoginButton() {

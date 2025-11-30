@@ -1,5 +1,4 @@
 import {
-	AspectRatio,
 	Badge,
 	Box,
 	Button,
@@ -38,7 +37,7 @@ export function CourseDetail({ course, onBack }: CourseDetailProps) {
 	const { packageId } = useNetworkVariables() as any;
 
 	// Fetch user's owned LecturePass objects
-	const { data: ownedObjects, isPending } = useSuiClientQuery(
+	const { data: ownedObjects} = useSuiClientQuery(
 		"getOwnedObjects",
 		{
 			owner: account?.address || "",
